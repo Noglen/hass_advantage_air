@@ -66,12 +66,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     entities = []
     for ac_key, ac_device in instance["coordinator"].data["aircons"].items():
-        ac = AdvantageAirAC(instance, ac_key)
-        entities.append(ac)
+        entities.append(AdvantageAirAC(instance, ac_key))
         for zone_key, zone in ac_device["zones"].items():
             # Only add zone climate control when zone is in temperature control
             if zone["type"] != 0:
-                entities.append(AdvantageAirZone(instance, ac_key, zone_key, ac))
+                entities.append(AdvantageAirZone(instance, ac_key, zone_key))
     async_add_entities(entities)
 
     platform = entity_platform.async_get_current_platform()
@@ -210,13 +209,13 @@ class AdvantageAirZone(AdvantageAirClimateEntity):
     def hvac_mode(self):
         """Return the current HVAC modes."""
         if self._zone["state"] == ADVANTAGE_AIR_STATE_OPEN:
-            return self.parent_ac.hvac_mode
+            return ADVANTAGE_AIR_HVAC_MODES.get(self._ac["mode"])
         return HVAC_MODE_OFF
 
     @property
     def hvac_modes(self):
         """Return supported HVAC modes."""
-        return ZONE_HVAC_MODES + [self.parent_ac.hvac_mode]
+        return ZONE_HVAC_MODES + [ADVANTAGE_AIR_HVAC_MODES.get(self._ac["mode"])]
 
     @property
     def supported_features(self):
