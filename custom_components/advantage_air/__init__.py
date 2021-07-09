@@ -3,7 +3,7 @@
 from datetime import timedelta
 import logging
 
-from advantage_air import ApiError, advantage_air
+from .py_advantage_air import ApiError, advantage_air
 
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
